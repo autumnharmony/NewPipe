@@ -9,6 +9,12 @@
         app:showAsAction="ifRoom"/>
 
     <item
+        android:id="@+id/action_send_to_tv"
+        android:icon="?attr/share"
+        android:title="@string/play_on_tv"
+        app:showAsAction="ifRoom"/>
+
+    <item
         android:id="@+id/menu_item_share"
         android:icon="?attr/share"
         android:title="@string/share"

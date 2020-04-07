@@ -19,6 +19,7 @@
 
 package org.schabi.newpipe.player;
 
+import android.app.UiModeManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -172,7 +173,7 @@ public final class MainVideoPlayer extends AppCompatActivity
                 if (globalScreenOrientationLocked()) {
                     final boolean lastOrientationWasLandscape = defaultPreferences
                             .getBoolean(getString(R.string.last_orientation_landscape_key), false);
-                    setLandscape(lastOrientationWasLandscape);
+                    setLandscape(lastOrientationWasLandscape || isTv());
                 } else {
                     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
                 }
@@ -203,6 +204,11 @@ public final class MainVideoPlayer extends AppCompatActivity
             playerImpl.handleIntent(intent);
         }
     }
+    // todo move to util
+    private boolean isTv() {
+        UiModeManager uiModeManager = (UiModeManager) getSystemService(UI_MODE_SERVICE);
+        return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
+    }
 
     @Override
     protected void onResume() {
@@ -215,7 +221,7 @@ public final class MainVideoPlayer extends AppCompatActivity
         if (globalScreenOrientationLocked()) {
             boolean lastOrientationWasLandscape = defaultPreferences
                     .getBoolean(getString(R.string.last_orientation_landscape_key), false);
-            setLandscape(lastOrientationWasLandscape);
+            setLandscape(lastOrientationWasLandscape || isTv());
         }
 
         final int lastResizeMode = defaultPreferences.getInt(

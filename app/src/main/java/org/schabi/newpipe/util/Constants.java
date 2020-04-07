@@ -13,5 +13,8 @@ public final class Constants {
 
     public static final int NO_SERVICE_ID = -1;
 
+    public static final String NEW_PIPE = "NewPipe";
+    public static final String HTTP_TCP = "_http._tcp.";
+
     private Constants() { }
 }

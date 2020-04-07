@@ -1,6 +1,8 @@
 package org.schabi.newpipe.fragments.detail;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -48,6 +50,7 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 
 import org.schabi.newpipe.R;
 import org.schabi.newpipe.ReCaptchaActivity;
+import org.schabi.newpipe.SenderActivity;
 import org.schabi.newpipe.download.DownloadDialog;
 import org.schabi.newpipe.extractor.InfoItem;
 import org.schabi.newpipe.extractor.NewPipe;
@@ -200,6 +203,7 @@ public class VideoDetailFragment extends BaseStateFragment<StreamInfo>
      * The peek is the current video.
      */
     private final LinkedList<StackItem> stack = new LinkedList<>();
+//    private MyBroadcastReceiver receiver;
 
     public static VideoDetailFragment getInstance(final int serviceId, final String videoUrl,
                                                   final String name) {
@@ -620,6 +624,8 @@ public class VideoDetailFragment extends BaseStateFragment<StreamInfo>
         menu.findItem(R.id.action_play_with_kodi).setVisible(
                 PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(
                         activity.getString(R.string.show_play_with_kodi_key), false));
+
+        menu.findItem(R.id.action_send_to_tv).setVisible(true);
     }
 
     @Override
@@ -656,6 +662,21 @@ public class VideoDetailFragment extends BaseStateFragment<StreamInfo>
                         Log.i(TAG, "Failed to start kore", e);
                     }
                     KoreUtil.showInstallKoreDialog(activity);
+                }
+                return true;
+            case R.id.action_send_to_tv:
+
+
+                try {
+
+                    Intent intent = new Intent(activity, SenderActivity.class);
+                    intent.setData(Uri.parse(url.replace("https", "http")));
+                    startActivity(intent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                    builder.setMessage("Problems while discovering devices with NewPipe");
+                    builder.create().show();
                 }
                 return true;
             default:
@@ -695,7 +716,8 @@ public class VideoDetailFragment extends BaseStateFragment<StreamInfo>
             }
 
             @Override
-            public void onNothingSelected(final AdapterView<?> parent) { }
+            public void onNothingSelected(final AdapterView<?> parent) {
+            }
         });
     }
 
@@ -1271,8 +1293,8 @@ public class VideoDetailFragment extends BaseStateFragment<StreamInfo>
         int errorId = exception instanceof YoutubeStreamExtractor.DecryptException
                 ? R.string.youtube_signature_decryption_error
                 : exception instanceof ExtractionException
-                        ? R.string.parsing_error
-                        : R.string.general_error;
+                ? R.string.parsing_error
+                : R.string.general_error;
 
         onUnrecoverableError(exception, UserAction.REQUESTED_STREAM,
                 NewPipe.getNameOfService(serviceId), url, errorId);
@@ -1325,4 +1347,15 @@ public class VideoDetailFragment extends BaseStateFragment<StreamInfo>
                     animateView(detailPositionView, false, 500);
                 });
     }
+//
+//    class MyBroadcastReceiver extends BroadcastReceiver {
+//
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            Bundle extras = intent.getExtras();
+//            String state = extras.getString("extra");
+//            updateMenuItemVisibility();// update your textView in the main layout
+//        }
+//    }
+
 }
